@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -123,11 +124,20 @@ public class CloudJacksonJson extends LegacyJacksonJson {
 				SerializerProvider provider) throws IOException {
 
 			if (info.getInstanceId() == null && info.getMetadata() != null) {
-				String instanceId = info.getMetadata().get("instanceId");
+				String instanceId = calculateInstanceId(info);
 				info = new InstanceInfo.Builder(info).setInstanceId(instanceId).build();
 			}
 
 			super.serialize(info, jgen, provider);
+		}
+
+		private String calculateInstanceId(InstanceInfo info) {
+			String instanceId = info.getMetadata().get("instanceId");
+			String hostName = info.getHostName();
+			if (instanceId != null && StringUtils.hasText(hostName) && !instanceId.startsWith(hostName)) {
+				instanceId = hostName + ":" + instanceId;
+			}
+			return instanceId == null ? hostName : instanceId;
 		}
 	}
 

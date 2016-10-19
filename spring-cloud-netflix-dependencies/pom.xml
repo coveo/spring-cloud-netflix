@@ -9,19 +9,19 @@
         <relativePath/>
 	</parent>
 	<artifactId>spring-cloud-netflix-dependencies</artifactId>
-	<version>1.1.1.BUILD-SNAPSHOT</version>
+	<version>1.1.2.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>spring-cloud-netflix-dependencies</name>
 	<description>Spring Cloud Netflix Dependencies</description>
 	<properties>
-		<spring-cloud-commons.version>1.1.1.BUILD-SNAPSHOT</spring-cloud-commons.version>
-		<spring-cloud-config.version>1.1.1.BUILD-SNAPSHOT</spring-cloud-config.version>
-		<spring-cloud-stream.version>1.0.1.BUILD-SNAPSHOT</spring-cloud-stream.version>
+		<spring-cloud-commons.version>1.1.2.BUILD-SNAPSHOT</spring-cloud-commons.version>
+		<spring-cloud-config.version>1.1.2.BUILD-SNAPSHOT</spring-cloud-config.version>
+		<spring-cloud-stream.version>1.0.2.BUILD-SNAPSHOT</spring-cloud-stream.version>
 		<archaius.version>0.7.4</archaius.version>
-		<eureka.version>1.4.6</eureka.version>
+		<eureka.version>1.4.8</eureka.version>
 		<feign.version>8.16.2</feign.version>
-		<hystrix.version>1.5.2</hystrix.version>
-		<ribbon.version>2.1.5</ribbon.version>
+		<hystrix.version>1.5.3</hystrix.version>
+		<ribbon.version>2.2.0</ribbon.version>
 		<servo.version>0.10.1</servo.version>
 		<zuul.version>1.1.0</zuul.version>
 		<rxjava.version>1.1.5</rxjava.version>
@@ -101,6 +101,12 @@
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
+				<!-- Deprecated. To be removed -->
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-turbine-amqp</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-starter-turbine-stream</artifactId>
 				<version>${project.version}</version>
@@ -118,6 +124,12 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-netflix-eureka-server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Deprecated. To be removed -->
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-netflix-hystrix-amqp</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

@@ -259,4 +259,65 @@ public class ProxyRequestHelperTests {
 		assertThat(queryString, is("?wsdl"));
 	}
 
+	@Test
+	public void buildZuulRequestURIWithUTF8() throws Exception {
+		String encodedURI = "/resource/esp%C3%A9cial-char";
+		String decodedURI = "/resource/espécial-char";
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", encodedURI);
+		request.setCharacterEncoding("UTF-8");
+		final RequestContext context = RequestContext.getCurrentContext();
+		context.setRequest(request);
+		context.set("requestURI", decodedURI);
+
+		final String requestURI = new ProxyRequestHelper().buildZuulRequestURI(request);
+		assertThat(requestURI, equalTo(encodedURI));
+	}
+
+	@Test
+	public void buildZuulRequestURIWithDefaultEncoding() {
+		String encodedURI = "/resource/esp%E9cial-char";
+		String decodedURI = "/resource/espécial-char";
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", encodedURI);
+		final RequestContext context = RequestContext.getCurrentContext();
+		context.setRequest(request);
+		context.set("requestURI", decodedURI);
+
+		final String requestURI = new ProxyRequestHelper().buildZuulRequestURI(request);
+		assertThat(requestURI, equalTo(encodedURI));
+	}
+
+	@Test
+	public void getUTF8Url() {
+		String requestURI = "/oléדרעק";
+		String encodedRequestURI = "/ol%C3%A9%D7%93%D7%A8%D7%A2%D7%A7";
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", requestURI);
+		request.setCharacterEncoding("UTF-8");
+
+		RequestContext context = RequestContext.getCurrentContext();
+		context.set("requestURI", requestURI);
+
+		ProxyRequestHelper helper = new ProxyRequestHelper();
+
+		String uri = helper.buildZuulRequestURI(request);
+
+		assertThat(uri, is(encodedRequestURI));
+	}
+
+	@Test
+	public void getDefaultEncodingUrl() {
+		String requestURI = "/oléדרעק";
+		String encodedRequestURI = "/ol%E9%3F%3F%3F%3F";
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", requestURI);
+
+		RequestContext context = RequestContext.getCurrentContext();
+		context.set("requestURI", requestURI);
+
+		ProxyRequestHelper helper = new ProxyRequestHelper();
+
+		String uri = helper.buildZuulRequestURI(request);
+
+		assertThat(uri, is(encodedRequestURI));
+	}
 }

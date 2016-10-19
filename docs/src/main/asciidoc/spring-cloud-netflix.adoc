@@ -286,7 +286,7 @@ Being an instance also involves a periodic heartbeat to the registry
 (via the client's `serviceUrl`) with default duration 30 seconds. A
 service is not available for discovery by clients until the instance,
 the server and the client all have the same metadata in their local
-cache (so it could take 3 hearbeats). You can change the period using
+cache (so it could take 3 heartbeats). You can change the period using
 `eureka.instance.leaseRenewalIntervalInSeconds` and this will speed up
 the process of getting clients connected to other services. In
 production it's probably better to stick with the default because
@@ -319,22 +319,22 @@ Eureka background reading: see https://github.com/cfregly/fluxcapacitor/wiki/Net
 
 [TIP]
 ====
-Due to Gradle's dependency resolution rules and the lack of a parent bom feature, simply depending on spring-cloud-starter-eureka-server can cause failures on application startup. To remedy this the Spring dependency management plugin must be added and the Spring cloud starter parent bom must be imported like so:
+Due to Gradle's dependency resolution rules and the lack of a parent bom feature, simply depending on spring-cloud-starter-eureka-server can cause failures on application startup. To remedy this the Spring Boot Gradle plugin must be added and the Spring cloud starter parent bom must be imported like so:
 
 .build.gradle
 [source,java,indent=0]
 ----
 buildscript {
   dependencies {
-    classpath "io.spring.gradle:dependency-management-plugin:0.4.0.RELEASE"
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
   }
 }
 
-apply plugin: "io.spring.dependency-management"
+apply plugin: "spring-boot"
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-starter-parent:1.0.0.RELEASE'
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:Brixton.RELEASE"
   }
 }
 ----
@@ -589,7 +589,7 @@ On the server side Just create a Spring Boot application and annotate it with `@
 
 You can then point the Hystrix Dashboard to the Turbine Stream Server instead of individual Hystrix streams.  If Turbine Stream is running on port 8989 on myhost, then put `http://myhost:8989` in the stream input field in the Hystrix Dashboard. Circuits will be prefixed by their respective serviceId, followed by a dot, then the circuit name.
 
-Spring Cloud provides a `spring-cloud-starter-turbine-stream` that has all the dependencies you need to get a Turbine Stream server running - just add the Sream binder of your choice, e.g. `spring-cloud-starter-stream-rabbit`. You need Java 8 to run the app because it is Netty-based.
+Spring Cloud provides a `spring-cloud-starter-turbine-stream` that has all the dependencies you need to get a Turbine Stream server running - just add the Stream binder of your choice, e.g. `spring-cloud-starter-stream-rabbit`. You need Java 8 to run the app because it is Netty-based.
 
 [[spring-cloud-ribbon]]
 == Client Side Load Balancer: Ribbon

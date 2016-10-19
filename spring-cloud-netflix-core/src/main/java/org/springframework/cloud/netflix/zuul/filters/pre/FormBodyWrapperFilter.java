@@ -20,12 +20,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
@@ -165,25 +171,30 @@ public class FormBodyWrapperFilter extends ZuulFilter {
 		private synchronized void buildContentData() {
 			try {
 				MultiValueMap<String, Object> builder = new LinkedMultiValueMap<String, Object>();
+				Set<String> queryParams = findQueryParams();
 				for (Entry<String, String[]> entry : this.request.getParameterMap()
 						.entrySet()) {
-					for (String value : entry.getValue()) {
-						builder.add(entry.getKey(), value);
+					if (!queryParams.contains(entry.getKey())) {
+						for (String value : entry.getValue()) {
+							builder.add(entry.getKey(), value);
+						}
 					}
 				}
 				if (this.request instanceof MultipartRequest) {
 					MultipartRequest multi = (MultipartRequest) this.request;
 					for (Entry<String, List<MultipartFile>> parts : multi
 							.getMultiFileMap().entrySet()) {
-						for (MultipartFile part : parts.getValue()) {
-							MultipartFile file = part;
+						for (Part file : this.request.getParts()) {
 							HttpHeaders headers = new HttpHeaders();
 							headers.setContentDispositionFormData(file.getName(),
-									file.getOriginalFilename());
-							headers.setContentType(
-									MediaType.valueOf(file.getContentType()));
-							HttpEntity<byte[]> entity = new HttpEntity<byte[]>(
-									file.getBytes(), headers);
+									file.getSubmittedFileName());
+							if (file.getContentType() != null) {
+								headers.setContentType(
+										MediaType.valueOf(file.getContentType()));
+							}
+							HttpEntity<Resource> entity = new HttpEntity<Resource>(
+									new InputStreamResource(file.getInputStream()),
+									headers);
 							builder.add(parts.getKey(), entity);
 						}
 					}
@@ -200,6 +211,20 @@ public class FormBodyWrapperFilter extends ZuulFilter {
 			catch (Exception e) {
 				throw new IllegalStateException("Cannot convert form data", e);
 			}
+		}
+
+		private Set<String> findQueryParams() {
+			Set<String> result = new HashSet<>();
+			String query = this.request.getQueryString();
+			if (query != null) {
+				for (String value : StringUtils.split(query, "&")) {
+					if (value.contains("=")) {
+						value = value.substring(0, value.indexOf("="));
+					}
+					result.add(value);
+				}
+			}
+			return result;
 		}
 
 		private class FormHttpOutputMessage implements HttpOutputMessage {

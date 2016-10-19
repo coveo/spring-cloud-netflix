@@ -6,7 +6,7 @@ server:
     mime-types: application/xml,application/json
 logging:
   level:
-    org.springframework.web: DEBUG
+    org.springframework.web: INFO
 spring:
   application:
     name: testclient
@@ -26,6 +26,10 @@ foo:
   ribbon:
     ConnectTimeout: 7
     ReadTimeout: 17
+badClients:
+  ribbon:
+    MaxAutoRetriesNextServer: 10
+    ReadTimeout: 200
 management:
   context-path: /admin
 endpoints:
@@ -44,3 +48,4 @@ zuul:
 feignClient:
   localappName: localapp
   methodLevelRequestMappingPath: /hello2
+  myPlaceholderHeader: myPlaceholderHeaderValue
