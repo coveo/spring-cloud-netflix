@@ -133,7 +133,7 @@
 		}
 
 		function calcRatePerSecond(data) {
-			var numberSeconds = data["propertyValue_metricsRollingStatisticalWindowInMilliseconds"] / 1000;
+			var numberSeconds = data["propertyValue_metricsRollingStatisticalWindowInMilliseconds"] / data["reportingHosts"] / 1000;
 
 			var totalRequests = data["requestCount"];
 			if (totalRequests < 0) {
